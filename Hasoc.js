@@ -1,5 +1,5 @@
 proxy = `https://hasocsubmission.el.r.appspot.com`
-
+    //proxy = `http://192.168.43.246:5000`
 
 var task_titles = {
     "1A_English": "English Subtask A",
@@ -23,7 +23,7 @@ function getCookie(name) {
 }
 
 function check_token() {
-    if (getCookie('token') == null || getCookie('user') == null) {
+    if (getCookie('token') == null || getCookie('user') == null || getCookie('team') == null) {
         window.location = 'login.html';
     } else {
         team_data_new()
@@ -33,9 +33,10 @@ function check_token() {
 
 async function submission() {
     const url = proxy + "/dashboard/submission";
-    let submission_name = `<input type=text id="Subname" class="swal2-input mb-2" placeholder="Please enter your submission name" style="width:70%;" maxlength="40"></input>`
-    let desc = `<textarea id="Desc" placeholder="Please enter your description" class="swal2-input mb-2" style="width:70%;height:30%" maxlength="150"></textarea>`
+    let submission_name = `</span><input type=text id="Subname" class="swal2-input mb-2" placeholder="Enter submission name" style="width:70%;" maxlength="40"></input>`
+    let desc = `<textarea id="Desc" placeholder="Enter submission description(optional)" class="swal2-input mb-3" style="width:70%;height:30%" maxlength="256"></textarea>`
     let select_box_html = `<select id="subtask_name" class="swal2-input" style="width:70%;">
+    <option value="" selected hidden>Select Subtask</option>
     <option value="1A_English">English Subtask A</option>
     <option value="1B_English">English Subtask B</option>
     <option value="1A_Hindi">Hindi Subtask A</option>
@@ -62,7 +63,11 @@ async function submission() {
             var tasks_name = opt.value;
             ex = ex.split('.').pop()
 
-            if (subname.length == 0) {
+            if (tasks_name == "") {
+                Swal.showValidationMessage(
+                    `Please Select Subtask`
+                )
+            } else if (subname.length == 0) {
                 Swal.showValidationMessage(
                     `Please Enter Submission Name`
                 )
@@ -250,7 +255,7 @@ async function details(_id) {
 async function team_data_new() {
     var sort_param = "task_name";
     sort_param = document.getElementById("sort_param").value;
-    document.getElementById("navbarDropdownMenuLink").innerHTML = `Welcome ${getCookie('user')} 🤗`
+    document.getElementById("navbarDropdownMenuLink").innerHTML = `Welcome, Team ${getCookie('team')} 🤗`
     $.ajax({
         type: 'POST',
         url: proxy + `/dashboard/team_data/${sort_param}`,

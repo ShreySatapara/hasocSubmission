@@ -1,4 +1,5 @@
 proxy = 'https://hasocsubmission.el.r.appspot.com'
+    //proxy = 'http://192.168.43.246:5000'
 
 function logout() {
     document.cookie = "token= ; expires = Thu, 01 Jan 1970 00:00:00 GMT"
@@ -71,7 +72,7 @@ async function changepassword() {
 }
 
 function check_token() {
-    if (getCookie('token' == null || getCookie('user') == null)) {
+    if (getCookie('token') == null || getCookie('user') == null || getCookie('team') == null) {
         window.location = 'login.html';
     } else {
         leaderboard_table()
@@ -99,8 +100,9 @@ function leaderboard_table() {
     window.history.pushState({}, document.title, "" + "leaderboard.html");
     var leaderboard_table = document.getElementById('leaderboard_table_body')
     var tab = ``
-    var user = getCookie('user')
-    document.getElementById("navbarDropdownMenuLink").innerHTML = `Welcome ${user} 🤗`
+    var user = getCookie('team')
+    var team_name = getCookie('user')
+    document.getElementById("navbarDropdownMenuLink").innerHTML = `Welcome, Team ${user} 🤗`
     $.ajax({
         type: 'POST',
         url: proxy + "/leaderboard",
@@ -120,31 +122,26 @@ function leaderboard_table() {
                     document.getElementById("footer_div").classList.remove("position-fixed")
                 }
             }
-            var task_titles = {
-                "1A_English": "English Subtask A",
-                "1B_English": "English Subtask B",
-                "1A_Hindi": "Hindi Subtask A",
-                "1B_Hindi": "Hindi Subtask B",
-                "1A_Marathi": "Marathi Subtask A",
-                "2_ICHCL": "Subtask 2"
-            }
+            console.log(result)
             for (var i = 0; i < result.length; i++) {
-                if (result[i].team_name == user) {
+                if (result[i].team_name == team_name) {
                     tab += `<tr class="bg-info h5 text-white">
                     <td class="text-center align-middle"><h4>${i+1}</h4></td>
-                    <td class="text-center align-middle">${result[i].team_name}</td>
-                    <td class="text-center align-middle">${task_titles[result[i].task_name]}</td>
+                    <td class="text-center align-middle">${result[i].team}</td>
+                    <td class="text-center align-middle">${result[i].submission_name}</td>
                     <td class="text-center align-middle">${result[i].timestamp}</td>
-                    <td class="text-center align-middle">${result[i].f1_score}</td>
+                    <td class="text-center align-middle">${result[i].f1_score.toFixed(4)}</td>
+                    <td class="text-center align-middle">${result[i].precision.toFixed(4)}</td>
                     <td class="text-center align-middle">${result[i].submission_count}/5</td>
                 </tr>`
                 } else {
                     tab += `<tr>
                         <td class="text-center align-middle"><h4>${i+1}</h4></td>
-                        <td class="text-center align-middle">${result[i].team_name}</td>
-                        <td class="text-center align-middle">${task_titles[result[i].task_name]}</td>
+                        <td class="text-center align-middle">${result[i].team}</td>
+                        <td class="text-center align-middle">${result[i].submission_name}</td>
                         <td class="text-center align-middle">${result[i].timestamp}</td>
-                        <td class="text-center align-middle">${result[i].f1_score}</td>
+                        <td class="text-center align-middle">${result[i].f1_score.toFixed(4)}</td>
+                        <td class="text-center align-middle">${result[i].precision.toFixed(4)}</td>
                         <td class="text-center align-middle">${result[i].submission_count}/5</td>
                     </tr>`
                 }

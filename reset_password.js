@@ -1,5 +1,5 @@
 proxy = "https://hasocsubmission.el.r.appspot.com"
-
+    //proxy = "http://192.168.43.246:5000"
 
 async function reset_password() {
     const urlParams = new URLSearchParams(window.location.search);

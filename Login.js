@@ -1,5 +1,10 @@
 proxy = "https://hasocsubmission.el.r.appspot.com"
-    //proxy = "http://192.168.0.104:5000"
+    //proxy = "http://192.168.43.246:5000"
+
+
+function redirect() {
+    window.location = "https://hasocfire.github.io/submission"
+}
 
 function validate() {
     var email = document.getElementById("username");
@@ -16,6 +21,23 @@ function setCookie(name, value, daysToLive) {
         cookie += "; max-age=" + daysToLive * 24 * 60 * 60;
 
         document.cookie = cookie;
+    }
+}
+
+function getCookie(name) {
+    var cookieArr = document.cookie.split(";");
+    for (var i = 0; i < cookieArr.length; i++) {
+        var cookiePair = cookieArr[i].split("=");
+        if (name == cookiePair[0].trim()) {
+            return decodeURIComponent(cookiePair[1]);
+        }
+    }
+    return null;
+}
+
+function check_token() {
+    if (getCookie('token') != null && getCookie('user') != null && getCookie('team') != null) {
+        window.location = 'index.html';
     }
 }
 
@@ -55,6 +77,7 @@ function login() {
                 var token = result.token;
                 setCookie("token", token, 7);
                 setCookie("user", email, 7);
+                setCookie("team", result.team, 7)
                 window.location = "index.html";
             },
             error: function(jqXHR, textStatus, errorThrown) {
@@ -113,7 +136,7 @@ async function forgot_password() {
             Swal.fire({
                 icon: 'success',
                 title: `Reset link sent to your registered email id`,
-                timer: 3000
+                html: `<span class="text-mute">link is valid for 5 minutes. please check your spam before requesting again. If you face any issue please write us at hasocfire@gmail.com</mute>`
             })
         }
     })

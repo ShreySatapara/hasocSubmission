@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body onload="Graph()">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.5.0/dist/chart.min.js" integrity="sha256-yz7K02nILYEeRDwEfzu/1zI9SpBKod/nLYMTFh7vszs=" crossorigin="anonymous"></script>
+    <iframe class="chartjs-hidden-iframe" tabindex="-1" style="display: block; overflow: hidden; border: 0px; margin: 0px; inset: 0px; height: 100%; width: 100%; position: absolute; pointer-events: none; z-index: -1;"></iframe>
+    <canvas id="myChart" style="width:100%;max-width:600px;margin-top:5%;margin-bottom: 5%;margin-left: 30%;"></canvas>
+    <script src="js/jquery-3.3.1.min.js"></script>
+
+    <script>
+        var count = []
+        var date = []
+        var score = []
+
+        function Graph() {
+
+            const urlParams = new URLSearchParams(window.location.search);
+            task_name = urlParams.get('subtask_name')
+            if (task_name == null) {
+                // var task_name = document.getElementById("leaderboard_task").value
+            } else {
+                var selectionIndex = {
+                    "1A_English": 0,
+                    "1B_English": 1,
+                    "1A_Hindi": 2,
+                    "1B_Hindi": 3,
+                    "1A_Marathi": 4,
+                    "2_ICHCL": 5
+                }
+                document.getElementById("leaderboard_task").selectedIndex = selectionIndex[task_name]
+            }
+            // window.history.pushState({}, document.title, "" + "Leader_Board.html");
+            var leaderboard_table = document.getElementById('leaderboard_table_body')
+            var tab = ``
+                // var user = getCookie('user')
+                // document.getElementById("navbarDropdownMenuLink").innerHTML = `Welcome ${user} 🤗`
+            $.ajax({
+                type: 'POST',
+                url: "https://hasocsubmission.el.r.appspot.com//leaderboard/graph_daily_submission",
+                headers: {
+                    "x-access-token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0ZWFtX25hbWUiOiJTaHJleSJ9.FBfNFLVee27tHmq8mvJ2w5MPVGTU0ZrhF-tWe46gSl8",
+                    'content-type': 'application/json'
+                },
+                data: JSON.stringify({
+                    "task_name": '1B_English'
+                }),
+                success: function(result) {
+                    //console.log(JSON.parse(result));
+                    // var arr=result.split("");
+                    //console.log(Object.assign([], result));
+                    console.log(result);
+                    console.log(typeof(result));
+                    var res = JSON.parse(result);
+                    console.log(typeof(res));
+                    console.log(res['data'].length);
+                    for (var i = 0; i < res['data'].length; i++) {
+                        //console.log(res['data'][i].count);
+                        date.push(res['data'][i]._id)
+
+                        count.push(res['data'][i].count)
+
+                        score.push(res['data'][i].max_f1)
+                            //date = date.sort()
+                        var values = count.map((x) => x)
+                        var scores = score.map((x) => x)
+                        var dates = date.map((x) => x)
+
+                    }
+
+
+                    var ctx = document.getElementById("myChart");
+                    var local_highscore = 0
+                    var chart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: dates,
+                            datasets: [{
+                                type: 'line',
+                                label: 'High Score',
+                                yAxisID: 'score',
+                                data: scores,
+                                borderColor: 'rgba(255, 99, 132, 1)',
+                                backgroundColor: 'rgba(255, 255, 255, 0.0)'
+                            }, {
+                                type: 'bar',
+                                label: 'Total Daily Submissions',
+                                yAxisID: 'count',
+                                data: values
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                yAxis: [{
+                                    id: "count",
+                                    position: "left",
+                                    scaleLabel: {
+                                        display: true,
+                                        labelString: 'Submission count'
+                                    },
+                                    ticks: {
+                                        beginAtZero: true,
+                                        min: 0,
+                                        suggestedMax: 25
+                                    }
+                                }, {
+                                    id: "score",
+                                    position: "right",
+                                    scaleLabel: {
+                                        display: true,
+                                        labelString: 'Submission score'
+                                            //fontColor: 'rgba(255,99,132,1)',
+                                    },
+                                    ticks: {
+                                        beginAtZero: true,
+                                        suggestedMin: -0.1,
+                                        suggestedMax: 1.2,
+                                        // Reverse the score axis if we're doing descending (1 is better than 0)
+                                        //reverse: "desc" === "asc"
+                                    }
+                                }]
+                            }
+                        }
+                    });
+
+
+
+
+
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    if (jqXHR.status == 401) {
+                        window.location = "Login.html"
+                    }
+                    if (jqXHR.status == 404) {
+                        //document.getElementById("footer_div").classList.add("position-fixed")
+                        // document.getElementById("body_content").setAttribute("hidden", true)
+                        // document.getElementById("zero_submission_div").removeAttribute("hidden");
+                        // document.getElementById("loading").setAttribute("hidden", true);
+                    }
+                }
+            });
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</body>
+
+</html>
