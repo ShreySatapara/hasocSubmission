@@ -1,6 +1,10 @@
 proxy = `https://hasocsubmission.el.r.appspot.com`
     //proxy = `http://192.168.43.246:5000`
 
+function redirect() {
+    location.href = "https://hasocfire.github.io/submission"
+}
+
 var task_titles = {
     "1A_English": "English Subtask A",
     "1B_English": "English Subtask B",

@@ -3,7 +3,7 @@ proxy = "https://hasocsubmission.el.r.appspot.com"
 
 
 function redirect() {
-    window.location = "https://hasocfire.github.io/submission"
+    location.href = "https://hasocfire.github.io/submission"
 }
 
 function validate() {
